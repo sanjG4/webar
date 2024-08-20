@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>GeoAR.js demo</title>
@@ -8,25 +8,45 @@
     <script src="https://raw.githack.com/jeromeetienne/AR.js/master/aframe/build/aframe-ar.min.js"></script>
     <script src="https://raw.githack.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
     <script>
-      THREEx.ArToolkitContext.baseURL =
-        "https://raw.githack.com/jeromeetienne/ar.js/master/three.js/";
-    </script>
-  </head>
+        THREEx.ArToolkitContext.baseURL = "https://raw.githack.com/jeromeetienne/ar.js/master/three.js/";
 
-  <body style="margin: 0; overflow: hidden">
+        // Function to get current location and update the model's GPS position
+        function updateModelLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    // Update the model's GPS position
+                    const model = document.querySelector('#dynamicModel');
+                    model.setAttribute('gps-entity-place', `longitude: ${longitude}; latitude: ${latitude};`);
+                }, function(error) {
+                    console.error('Error getting location', error);
+                });
+            } else {
+                console.error('Geolocation is not supported by this browser.');
+            }
+        }
+
+        // Ensure the model location is updated once the page has loaded
+        window.addEventListener('load', updateModelLocation);
+    </script>
+</head>
+
+<body style="margin: 0; overflow: hidden">
     <a-scene
-      vr-mode-ui="enabled: false"
-      embedded
-      arjs="sourceType: webcam; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960; debugUIEnabled: false;"
+        vr-mode-ui="enabled: false"
+        embedded
+        arjs="sourceType: webcam; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960; debugUIEnabled: false;"
     >
-      <a-entity
-        gltf-model="./assets/magnemite/scene.gltf"
-        rotation="0 180 0"
-        scale="0.15 0.15 0.15"
-        gps-entity-place="longitude: 6.902343957129046; latitude: 79.86121726837531;"
-        animation-mixer
-      />
-      <a-camera gps-camera rotation-reader></a-camera>
+        <a-entity
+            id="dynamicModel"
+            gltf-model="./assets/magnemite/scene.gltf"
+            rotation="0 180 0"
+            scale="0.15 0.15 0.15"
+            animation-mixer
+        />
+        <a-camera gps-camera rotation-reader></a-camera>
     </a-scene>
-  </body>
+</body>
 </html>
